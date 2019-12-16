@@ -17,6 +17,7 @@ public class BasicClient extends Client
 
     double mouseX = 0;
     double mouseY = 0;
+    double angle = 0;
 
     public ArrayList<HungerPlayer> players = new ArrayList<HungerPlayer>();
     public ArrayList<Projectile> projectiles = new ArrayList<Projectile>();
@@ -41,34 +42,41 @@ public class BasicClient extends Client
 
         if(sHandler == null) return;
 
-        if(ke.getKeyCode() == KeyEvent.VK_W) {
-            Message m = new Message( (short) GameNetMessage.KEY_W.getId(), (short) 0 );
-            m.putBoolean(true);
-            sHandler.sendMessage(m);
-        }
+        //No more moving while trying to type a message!
+        if(!typing) {
+            if(ke.getKeyCode() == KeyEvent.VK_W) {
+                Message m = new Message( (short) GameNetMessage.KEY_W.getId(), (short) 0 );
+                m.putBoolean(true);
+                sHandler.sendMessage(m);
+            }
 
-        if(ke.getKeyCode() == KeyEvent.VK_S) {
-            Message m = new Message( (short) GameNetMessage.KEY_S.getId(), (short) 0 );
-            m.putBoolean(true);
-            sHandler.sendMessage(m);
-        }
+            if(ke.getKeyCode() == KeyEvent.VK_S) {
+                Message m = new Message( (short) GameNetMessage.KEY_S.getId(), (short) 0 );
+                m.putBoolean(true);
+                sHandler.sendMessage(m);
+            }
 
-        if(ke.getKeyCode() == KeyEvent.VK_A) {
-            Message m = new Message( (short) GameNetMessage.KEY_A.getId(), (short) 0 );
-            m.putBoolean(true);
-            sHandler.sendMessage(m);
-        }
+            if(ke.getKeyCode() == KeyEvent.VK_A) {
+                Message m = new Message( (short) GameNetMessage.KEY_A.getId(), (short) 0 );
+                m.putBoolean(true);
+                sHandler.sendMessage(m);
+            }
 
-        if(ke.getKeyCode() == KeyEvent.VK_D) {
-            Message m = new Message( (short) GameNetMessage.KEY_D.getId(), (short) 0 );
-            m.putBoolean(true);
-            sHandler.sendMessage(m);
-        }
+            if(ke.getKeyCode() == KeyEvent.VK_D) {
+                Message m = new Message( (short) GameNetMessage.KEY_D.getId(), (short) 0 );
+                m.putBoolean(true);
+                sHandler.sendMessage(m);
+            }
 
-        if(ke.getKeyCode() == KeyEvent.VK_SPACE) {
-            Message m = new Message( (short) GameNetMessage.KEY_SPACE.getId(), (short) 0 );
-            m.putBoolean(true);
-            sHandler.sendMessage(m);
+            if(ke.getKeyCode() == KeyEvent.VK_SPACE) {
+                Message m2 = new Message( (short) MessageTypes.getId("PLAYER_ROTATION"), (short) 0);
+                m2.putShort( (short) (angle * 10) );
+                sHandler.sendMessage(m2);
+                
+                Message m = new Message( (short) GameNetMessage.KEY_SPACE.getId(), (short) 0 );
+                m.putBoolean(true);
+                sHandler.sendMessage(m);
+            }
         }
     }
 
@@ -77,34 +85,37 @@ public class BasicClient extends Client
 
         if(sHandler == null) return;
 
-        if(ke.getKeyCode() == KeyEvent.VK_W) {
-            Message m = new Message( (short) GameNetMessage.KEY_W.getId(), (short) 0 );
-            m.putBoolean(false);
-            sHandler.sendMessage(m);
-        }
+        //No more moving while trying to type a message!
+        if(!typing) {
+            if(ke.getKeyCode() == KeyEvent.VK_W) {
+                Message m = new Message( (short) GameNetMessage.KEY_W.getId(), (short) 0 );
+                m.putBoolean(false);
+                sHandler.sendMessage(m);
+            }
 
-        if(ke.getKeyCode() == KeyEvent.VK_S) {
-            Message m = new Message( (short) GameNetMessage.KEY_S.getId(), (short) 0 );
-            m.putBoolean(false);
-            sHandler.sendMessage(m);
-        }
+            if(ke.getKeyCode() == KeyEvent.VK_S) {
+                Message m = new Message( (short) GameNetMessage.KEY_S.getId(), (short) 0 );
+                m.putBoolean(false);
+                sHandler.sendMessage(m);
+            }
 
-        if(ke.getKeyCode() == KeyEvent.VK_A) {
-            Message m = new Message( (short) GameNetMessage.KEY_A.getId(), (short) 0 );
-            m.putBoolean(false);
-            sHandler.sendMessage(m);
-        }
+            if(ke.getKeyCode() == KeyEvent.VK_A) {
+                Message m = new Message( (short) GameNetMessage.KEY_A.getId(), (short) 0 );
+                m.putBoolean(false);
+                sHandler.sendMessage(m);
+            }
 
-        if(ke.getKeyCode() == KeyEvent.VK_D) {
-            Message m = new Message( (short) GameNetMessage.KEY_D.getId(), (short) 0 );
-            m.putBoolean(false);
-            sHandler.sendMessage(m);
-        }
+            if(ke.getKeyCode() == KeyEvent.VK_D) {
+                Message m = new Message( (short) GameNetMessage.KEY_D.getId(), (short) 0 );
+                m.putBoolean(false);
+                sHandler.sendMessage(m);
+            }
 
-        if(ke.getKeyCode() == KeyEvent.VK_SPACE) {
-            Message m = new Message( (short) GameNetMessage.KEY_SPACE.getId(), (short) 0 );
-            m.putBoolean(false);
-            sHandler.sendMessage(m);
+            if(ke.getKeyCode() == KeyEvent.VK_SPACE) {
+                Message m = new Message( (short) GameNetMessage.KEY_SPACE.getId(), (short) 0 );
+                m.putBoolean(false);
+                sHandler.sendMessage(m);
+            }
         }
     }
 
@@ -122,11 +133,13 @@ public class BasicClient extends Client
         if(m.getType() == MessageTypes.getId("PROJECTILE_DESPAWN")) {
             short toRem = m.getId();
             for(int i=0; i<projectiles.size(); i++) {
-                if(projectiles.get(i).id == toRem) projectiles.remove(i);
-                i--;
+                if(projectiles.get(i).id == toRem) {
+                    projectiles.remove(i);
+                    i--;
+                }
             }
         }
-        
+
         if(m.getType() == MessageTypes.getId("PROJECTILE_MOVE")) {
             short projId = m.getId();
             for(Projectile p: projectiles) {
@@ -247,7 +260,7 @@ public class BasicClient extends Client
             while(projectiles.size() > 0 ) projectiles.remove(0);
             while(messages.size() > 0) messages.poll();
         }
-        
+
         if(sHandler != null) sHandler.setWaitTime(0);
 
         chatBox.x = 10;
@@ -313,7 +326,7 @@ public class BasicClient extends Client
             p.doLifeBar();
             p.render(canvas);
         }
-        
+
         for(Projectile p : projectiles) {
             p.render(canvas);
         }
@@ -349,6 +362,13 @@ public class BasicClient extends Client
             g.drawString("HP : " + self.hp + " / " + self.maxHp, 100, 45);
             g.drawString("HUNGER : " + self.hunger + " / " + self.maxHunger, 100, 60);
             g.drawString("THIRST : " + self.thirst + " / " + self.maxThirst, 100, 75);
+
+            if(p.getX() != self.x) {
+                angle = Math.atan( ( p.getY() - self.y ) / ( p.getX() - self.x ) );
+                angle = Math.toDegrees(angle);
+                if(p.getX() < self.x) angle += 180;
+            }
+            g.drawString("ANGLE: " + angle, 100, 90);
         }
     }
 }

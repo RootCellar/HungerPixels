@@ -8,6 +8,7 @@ public enum HungerNet {
     PROJECTILE_MOVE,
     PLAYER_SPAWN,
     PLAYER_REMOVE,
+    PLAYER_ROTATION,
     BEAR_SPAWN,
     SQUIRREL_SPAWN,
     ;

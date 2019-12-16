@@ -20,6 +20,8 @@ public class HungerPlayer extends Player
     public boolean right = false;
 
     public boolean attacking = false;
+    
+    public double rot = 0;
 
     public HungerPlayer(User u) {
         if(idPoint > 32000) idPoint = -32000;

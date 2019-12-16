@@ -61,11 +61,24 @@ public class GameRoom extends Room
             p.thirstUpdated = true;
         }
         
+        //Tell the client about the projectiles that exist
+        for(Projectile proj : projectiles) {
+            Message m = new Message( (short) MessageTypes.getId("PROJECTILE_SPAWN"), (short) proj.id);
+            u.send(m);
+            
+            proj.posUpdated = true;
+        }
+        
         newP.x = 0;
         newP.y = 0;
 
         players.add( newP );
         level.add(newP);
+        
+        newP.posUpdated = true;
+        newP.hpUpdated = true;
+        newP.hungerUpdated = true;
+        newP.thirstUpdated = true;
 
         /* There's a better way
         for(User user : users) {
@@ -91,6 +104,10 @@ public class GameRoom extends Room
                 for(HungerPlayer o : players) {
                     u.send( new Message( (short) GameNetMessage.MOB_REMOVE.getId(), (short) o.id) );
                 }
+                
+                for(Projectile proj : projectiles) {
+                    u.send( new Message( (short) MessageTypes.getId("PROJECTILE_DESPAWN"), (short) proj.id) );
+                }
 
                 players.remove(p);
                 level.remove(p);
@@ -105,8 +122,9 @@ public class GameRoom extends Room
     }
     
     public void spawnProjectile(Projectile p) {
-        //projectiles.add(p);
+        projectiles.add(p);
         level.add(p);
+        p.setDamage(30);
         Message toSend = new Message((short)MessageTypes.getId("PROJECTILE_SPAWN"), p.id);
         for(User u : users) u.send(toSend);
     }
@@ -172,8 +190,8 @@ public class GameRoom extends Room
                 Projectile proj = new Projectile(p);
                 proj.x = p.x;
                 proj.y = p.y;
-                proj.setByRot(0, 5);
-                proj.setOffset(7);
+                proj.setByRot(p.rot, 5);
+                //proj.setOffset(7);
                 spawnProjectile(proj);
 
                 for(HungerPlayer p2 : players) {
@@ -312,6 +330,14 @@ public class GameRoom extends Room
             }
             out(u.getName() + ": " + m.getString());
              */
+        }
+        
+        if(m.getType() == MessageTypes.getId("PLAYER_ROTATION")) {
+            for(HungerPlayer p : players) {
+                if(p.user.equals(u)) {
+                    p.rot = ( (double)m.readShort()) / 10;
+                }
+            }
         }
 
         if(m.getType() == GameNetMessage.KEY_SPACE.getId() ) {
