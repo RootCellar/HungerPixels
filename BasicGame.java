@@ -24,7 +24,15 @@ public class BasicGame extends Game
     public void revivePlayer() {
         player.x = 0;
         player.y = 0;
+        
         player.revive();
+    }
+    
+    public void setup() {
+        player.x = 0;
+        player.y = 0;
+        
+        engine.getLevel().add(player);
     }
     
     public void tick() {
@@ -73,10 +81,14 @@ public class BasicGame extends Game
         }
         
         if(in.p.down) {
-            player.damage(1);
+            for(double i = 0; i<90; i++) {
+                Projectile p = new Projectile(player);
+                
+                p.setByRot(i * 4, 3);
+                
+                engine.getLevel().add(p);
+            }
         }
-        
-        //player.hp = Randomizer.nextDouble(1, player.maxHp);
         
         engine.getLevel().tick();
     }
@@ -96,27 +108,28 @@ public class BasicGame extends Game
         
         c.setCenter( 0, 0 );
         
+        //Renders that don't use player offset
+        
         c.setCenter( player.x, player.y );
         
         engine.renderBorder();
         
         engine.renderEntities();
         
-        ///*
+        /*
         c.drawCircle(player.x, player.y, 255, 255, 255, player.size);
-        
         c.drawCircle(player.x, player.y, 255, 255, 255, player.size * 20);
         
-        c.drawLine(player.x, player.y, level.xBound / 2, level.yBound / 2, 255, 255, 255);
+        c.drawLine(player.x, player.y, 0, 0, 255, 255, 255);
         
-        c.drawLine( player.x, player.y, 0, 0, 255, 0, 0, 100 );
-        c.drawLine( player.x, player.y, level.xBound, 0, 0, 255, 0, 100 );
-        c.drawLine( player.x, player.y, 0, level.yBound, 0, 0, 255, 100 );
+        c.drawLine( player.x, player.y, -1 * level.xBound, -1 * level.yBound, 255, 0, 0, 100 );
+        c.drawLine( player.x, player.y, level.xBound, -1 * level.yBound, 0, 255, 0, 100 );
+        c.drawLine( player.x, player.y, -1 * level.xBound, level.yBound, 0, 0, 255, 100 );
         c.drawLine( player.x, player.y, level.xBound, level.yBound, 255, 255, 0, 100 );
         
-        c.drawLine( player.x, player.y, level.xBound / 2, 0, 255, 0, 255, 100 );
-        c.drawLine( player.x, player.y, level.xBound / 2, level.yBound, 0, 255, 255, 100 );
-        //*/
+        c.drawLine( player.x, player.y, 0, -1 * level.yBound, 255, 0, 255, 100 );
+        c.drawLine( player.x, player.y, 0, level.yBound, 0, 255, 255, 100 );
+        */
         
         c.render();
     }
